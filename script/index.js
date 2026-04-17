@@ -34,6 +34,10 @@ inputElement.addEventListener("blur", (event) => {
   event.target.style = "none";
 });
 
+listElement.addEventListener("click", (event) => {
+    console.log(event.target.parentElement)
+});
+
 function createButtonElement(classes) {
   const button = document.createElement("button");
   button.className = classes;
