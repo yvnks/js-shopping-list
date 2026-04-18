@@ -4,6 +4,15 @@ const listElement = document.querySelector("ul");
 const clearButton = document.getElementById("clear");
 const filterButton = document.getElementById("filter");
 
+function renderFromStorage() {
+  const itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.forEach((item) => {
+    addItemToDOM(item);
+    checkUiState();
+    filterItems();
+  });
+}
+
 function renderPageHTML() {
   formElement.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -14,15 +23,9 @@ function renderPageHTML() {
       return;
     }
 
-    const li = document.createElement("li");
-    li.appendChild(document.createTextNode(newItem));
+    addItemToDOM(newItem);
+    saveToStorage(newItem);
 
-    const buttonElem = createButtonElement("remove-item btn-link text-red");
-    const iconElem = createIconElement("fa-solid fa-xmark");
-    buttonElem.appendChild(iconElem);
-    li.appendChild(buttonElem);
-
-    listElement.appendChild(li);
     checkUiState();
 
     inputElement.value = "";
@@ -39,11 +42,43 @@ function renderPageHTML() {
   });
 }
 
+function addItemToDOM(item) {
+  const li = document.createElement("li");
+  li.appendChild(document.createTextNode(item));
+
+  const buttonElem = createButtonElement("remove-item btn-link text-red");
+  const iconElem = createIconElement("fa-solid fa-xmark");
+  buttonElem.appendChild(iconElem);
+  li.appendChild(buttonElem);
+
+  listElement.appendChild(li);
+}
+
+function saveToStorage(items) {
+  const itemsFromStorage = getItemsFromStorage();
+
+  itemsFromStorage.push(items);
+
+  // Convert to JSON str and set to localStorage.
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
+}
+
+function getItemsFromStorage() {
+  let itemsFromStorage;
+
+  if (localStorage.getItem("items") === null) {
+    itemsFromStorage = [];
+  } else {
+    itemsFromStorage = JSON.parse(localStorage.getItem("items"));
+  }
+
+  return itemsFromStorage;
+}
+
 function removeItemFromList() {
   // Use event delegation to delete multiple items.
   listElement.addEventListener("click", (event) => {
     if (event.target.parentElement.classList.contains("remove-item")) {
-      console.log(event.target);
       if (confirm(`Are you sure you want to delete?`)) {
         event.target.parentElement.parentElement.remove();
         checkUiState();
@@ -57,6 +92,7 @@ function clearItems() {
     while (listElement.firstChild) {
       listElement.removeChild(listElement.firstChild);
       checkUiState();
+      localStorage.clear("items");
     }
   });
 }
@@ -102,8 +138,13 @@ function filterItems() {
   });
 }
 
-filterItems();
-clearItems();
-renderPageHTML();
-removeItemFromList();
-checkUiState();
+function init() {
+  filterItems();
+  clearItems();
+  renderPageHTML();
+  removeItemFromList();
+  checkUiState();
+  renderFromStorage();
+}
+
+init();
