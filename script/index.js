@@ -43,7 +43,8 @@ function removeItemFromList() {
   // Use event delegation to delete multiple items.
   listElement.addEventListener("click", (event) => {
     if (event.target.parentElement.classList.contains("remove-item")) {
-      if (confirm("Are you sure?")) {
+      console.log(event.target);
+      if (confirm(`Are you sure you want to delete?`)) {
         event.target.parentElement.parentElement.remove();
         checkUiState();
       }
@@ -83,8 +84,26 @@ function checkUiState() {
     clearButton.style.display = "block";
   }
 }
+
+function filterItems() {
+  filterButton.addEventListener("input", (event) => {
+    const item = listElement.querySelectorAll("li");
+    const text = event.target.value.toLowerCase();
+
+    item.forEach((item) => {
+      const itemName = item.firstChild.textContent.toLowerCase();
+
+      if (itemName.indexOf(text) !== -1) {
+        item.style.display = "flex";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  });
+}
+
+filterItems();
 clearItems();
 renderPageHTML();
 removeItemFromList();
-
 checkUiState();
