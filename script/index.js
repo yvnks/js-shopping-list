@@ -2,6 +2,7 @@ const formElement = document.querySelector("#item-form");
 const inputElement = document.querySelector("#item-input");
 const listElement = document.querySelector("ul");
 const clearButton = document.getElementById("clear");
+const filterButton = document.getElementById("filter");
 
 function renderPageHTML() {
   formElement.addEventListener("submit", (e) => {
@@ -22,6 +23,7 @@ function renderPageHTML() {
     li.appendChild(buttonElem);
 
     listElement.appendChild(li);
+    checkUiState();
 
     inputElement.value = "";
   });
@@ -41,7 +43,10 @@ function removeItemFromList() {
   // Use event delegation to delete multiple items.
   listElement.addEventListener("click", (event) => {
     if (event.target.parentElement.classList.contains("remove-item")) {
-      event.target.parentElement.parentElement.remove();
+      if (confirm("Are you sure?")) {
+        event.target.parentElement.parentElement.remove();
+        checkUiState();
+      }
     }
   });
 }
@@ -50,6 +55,7 @@ function clearItems() {
   clearButton.addEventListener("click", (event) => {
     while (listElement.firstChild) {
       listElement.removeChild(listElement.firstChild);
+      checkUiState();
     }
   });
 }
@@ -67,5 +73,18 @@ function createIconElement(classes) {
   return icon;
 }
 
+function checkUiState() {
+  const listItem = document.querySelectorAll("li");
+  if (listItem.length === 0) {
+    filterButton.style.display = "none";
+    clearButton.style.display = "none";
+  } else {
+    filterButton.style.display = "block";
+    clearButton.style.display = "block";
+  }
+}
+clearItems();
 renderPageHTML();
 removeItemFromList();
+
+checkUiState();
