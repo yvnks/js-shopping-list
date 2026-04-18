@@ -98,6 +98,7 @@ function onClickItem(event) {
   }
 }
 
+// Prevent duplicate items
 function checkIfItemExist(item) {
   const itemsFromStorage = getItemsFromStorage();
   return itemsFromStorage.includes(item);
