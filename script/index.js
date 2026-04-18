@@ -75,16 +75,29 @@ function getItemsFromStorage() {
   return itemsFromStorage;
 }
 
-function removeItemFromList() {
-  // Use event delegation to delete multiple items.
+function onClickItem(event) {
   listElement.addEventListener("click", (event) => {
     if (event.target.parentElement.classList.contains("remove-item")) {
-      if (confirm(`Are you sure you want to delete?`)) {
-        event.target.parentElement.parentElement.remove();
-        checkUiState();
-      }
+      removeItemFromList(event.target.parentElement.parentElement);
     }
   });
+}
+
+function removeItemFromList(item) {
+  if (confirm("Are you sure?")) {
+    // Remove item from DOM.
+    item.remove();
+
+    removeItemFromStorage(item.textContent);
+    checkUiState();
+  }
+}
+
+function removeItemFromStorage(item) {
+  let itemsFromStorage = getItemsFromStorage();
+
+  itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
 }
 
 function clearItems() {
@@ -92,7 +105,7 @@ function clearItems() {
     while (listElement.firstChild) {
       listElement.removeChild(listElement.firstChild);
       checkUiState();
-      localStorage.clear("items");
+      localStorage.removeItem("items");
     }
   });
 }
@@ -142,9 +155,8 @@ function init() {
   filterItems();
   clearItems();
   renderPageHTML();
-  removeItemFromList();
   checkUiState();
   renderFromStorage();
+  onClickItem();
 }
-
 init();
