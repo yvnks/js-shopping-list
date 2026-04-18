@@ -1,42 +1,60 @@
 const formElement = document.querySelector("#item-form");
 const inputElement = document.querySelector("#item-input");
 const listElement = document.querySelector("ul");
+const clearButton = document.getElementById("clear");
 
-formElement.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const newItem = inputElement.value;
+function renderPageHTML() {
+  formElement.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const newItem = inputElement.value;
 
-  if (newItem === "") {
-    console.log("Please add an input.");
-    return;
-  }
+    if (newItem === "") {
+      console.log("Please add an input.");
+      return;
+    }
 
-  const li = document.createElement("li");
-  li.appendChild(document.createTextNode(newItem));
+    const li = document.createElement("li");
+    li.appendChild(document.createTextNode(newItem));
 
-  const buttonElem = createButtonElement("remove-item btn-link text-red");
-  const iconElem = createIconElement("fa-solid fa-xmark");
-  buttonElem.appendChild(iconElem);
-  li.appendChild(buttonElem);
+    const buttonElem = createButtonElement("remove-item btn-link text-red");
+    const iconElem = createIconElement("fa-solid fa-xmark");
+    buttonElem.appendChild(iconElem);
+    li.appendChild(buttonElem);
 
-  listElement.appendChild(li);
+    listElement.appendChild(li);
 
-  inputElement.value = "";
-});
+    inputElement.value = "";
+  });
 
-inputElement.addEventListener("focus", (event) => {
-  event.target.style.outlineColor = "green";
-  event.target.style.outlineStyle = "solid";
-  event.target.style.outlineWidth = "1px";
-});
+  inputElement.addEventListener("focus", (event) => {
+    event.target.style.outlineColor = "green";
+    event.target.style.outlineStyle = "solid";
+    event.target.style.outlineWidth = "1px";
+  });
 
-inputElement.addEventListener("blur", (event) => {
-  event.target.style = "none";
-});
+  inputElement.addEventListener("blur", (event) => {
+    event.target.style = "none";
+  });
+}
 
-listElement.addEventListener("click", (event) => {
-    console.log(event.target.parentElement)
-});
+function removeItemFromList() {
+  // Use event delegation to delete multiple items.
+  listElement.addEventListener("click", (event) => {
+    if (event.target.parentElement.classList.contains("remove-item")) {
+      event.target.parentElement.parentElement.remove();
+    }
+  });
+}
+
+function clearItems() {
+  clearButton.addEventListener("click", (event) => {
+    while (listElement.firstChild) {
+      listElement.removeChild(listElement.firstChild);
+    }
+  });
+}
+
+clearItems();
 
 function createButtonElement(classes) {
   const button = document.createElement("button");
@@ -48,3 +66,6 @@ function createIconElement(classes) {
   icon.className = classes;
   return icon;
 }
+
+renderPageHTML();
+removeItemFromList();
